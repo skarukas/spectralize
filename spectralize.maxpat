@@ -106,7 +106,6 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"color" : [ 1.0, 0.709803921568627, 0.196078431372549, 1.0 ],
@@ -152,7 +151,6 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
-										"visible" : 1,
 										"boxes" : [ 											{
 												"box" : 												{
 													"color" : [ 1.0, 0.709803921568627, 0.196078431372549, 1.0 ],
@@ -1357,7 +1355,6 @@
 														"tags" : "",
 														"style" : "",
 														"subpatcher_template" : "",
-														"visible" : 1,
 														"boxes" : [ 															{
 																"box" : 																{
 																	"id" : "obj-68",
@@ -3054,12 +3051,12 @@
 							"number_style" : "none",
 							"filter" : "none",
 							"domain_start" : 0.0,
-							"domain_end" : 0.0,
+							"domain_end" : 7.0,
 							"domain_style" : "linear",
 							"domain_markers" : [  ],
-							"domain_labels" : [ 0.0, "D5\n (1)" ],
-							"range_start" : 61.0,
-							"range_end" : 63.0,
+							"domain_labels" : [  ],
+							"range_start" : 50.0,
+							"range_end" : 74.0,
 							"range_style" : "linear",
 							"range_markers" : [  ],
 							"range_labels" : [  ],
@@ -3078,8 +3075,8 @@
 							"domain_style" : "linear",
 							"domain_markers" : [  ],
 							"domain_labels" : [  ],
-							"range_start" : 61.0,
-							"range_end" : 63.0,
+							"range_start" : 50.0,
+							"range_end" : 74.0,
 							"range_style" : "linear",
 							"range_markers" : [  ],
 							"range_labels" : [  ],
@@ -3333,7 +3330,7 @@
 					"patching_rect" : [ 1314.0, 552.5, 448.0, 56.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ -2.74993896484375, 261.16668701171875, 132.0, 56.0 ],
-					"text" : "D4",
+					"text" : "G#0",
 					"textcolor" : [ 0.164705887436867, 0.513725519180298, 0.643137276172638, 1.0 ],
 					"textjustification" : 2
 				}
@@ -3376,7 +3373,7 @@
 					"patching_rect" : [ 1421.0, 486.5, 182.0, 22.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 20.25006103515625, 243.16668701171875, 168.0, 22.0 ],
-					"text" : "293.66 Hz",
+					"text" : "25.93 Hz",
 					"textcolor" : [ 0.69803923368454, 0.69803923368454, 0.69803923368454, 1.0 ],
 					"textjustification" : 1
 				}
@@ -3392,8 +3389,8 @@
 					"patching_rect" : [ 1367.5, 523.5, 227.0, 27.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 136.0, 275.66668701171875, 77.0, 27.0 ],
-					"text" : "+0 ¢",
-					"textcolor" : [ 0.375, 0.375, 0.375, 1.0 ]
+					"text" : "-1 ¢",
+					"textcolor" : [ 0.367500007152557, 0.382499992847443, 0.382499992847443, 1.0 ]
 				}
 
 			}
@@ -3786,7 +3783,6 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-40",
@@ -6644,7 +6640,7 @@
 					"patching_rect" : [ 1249.333251953125, 633.666748046875, 517.66656494140625, 245.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 186.291259765625, 376.16668701171875, 687.0, 245.0 ],
-					"text" : "D4",
+					"text" : "G#0",
 					"textcolor" : [ 0.0, 0.0, 0.0, 0.050000000745058 ],
 					"textjustification" : 2
 				}
@@ -7177,79 +7173,52 @@
 		}
 ,
 		"dependency_cache" : [ 			{
-				"name" : "spectralize.js",
-				"bootpath" : "~/Box Sync/Programming/Max Patches/Spectralize",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
 				"name" : "formants.justin.poly.maxpat",
 				"bootpath" : "~/Box Sync/Programming/Max Patches/Node Stuff/JustIn/justin",
-				"patcherrelativepath" : "../Node Stuff/JustIn/justin",
+				"patcherrelativepath" : "../../Node Stuff/JustIn/justin",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vowel-triangle.jpg",
 				"bootpath" : "~/Documents/Max 8/Library/ciee-ircam-master/images",
-				"patcherrelativepath" : "../../../../Documents/Max 8/Library/ciee-ircam-master/images",
+				"patcherrelativepath" : "../../../../../Documents/Max 8/Library/ciee-ircam-master/images",
 				"type" : "JPEG",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "i-to-letter.txt",
 				"bootpath" : "~/Box Sync/Programming/Max Patches/Microtonal Synth",
-				"patcherrelativepath" : "../Microtonal Synth",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "sk.lace.js",
-				"bootpath" : "~/Box Sync/Programming/Max Patches/Spectralize",
-				"patcherrelativepath" : ".",
+				"patcherrelativepath" : "../../Microtonal Synth",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "offset-display.maxpat",
 				"bootpath" : "~/Box Sync/Programming/Max Patches/CECM Presentation",
-				"patcherrelativepath" : "../CECM Presentation",
+				"patcherrelativepath" : "../../CECM Presentation",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "slider-colors.maxpat",
 				"bootpath" : "~/Box Sync/Programming/Max Patches/CECM Presentation",
-				"patcherrelativepath" : "../CECM Presentation",
+				"patcherrelativepath" : "../../CECM Presentation",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "cent-format.maxpat",
 				"bootpath" : "~/Box Sync/Programming/Max Patches/CECM Presentation",
-				"patcherrelativepath" : "../CECM Presentation",
+				"patcherrelativepath" : "../../CECM Presentation",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "thru.maxpat",
-				"bootpath" : "C74:/patchers/m4l/Pluggo for Live resources/patches",
+				"bootpath" : "~/Box Sync/Programming/Max Patches/Spectralize/spectralize",
+				"patcherrelativepath" : ".",
 				"type" : "JSON",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "ylabels.js",
-				"bootpath" : "~/Box Sync/Programming/Max Patches/Spectralize",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
-				"implicit" : 1
-			}
-, 			{
-				"name" : "xlabels.js",
-				"bootpath" : "~/Box Sync/Programming/Max Patches/Spectralize",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
 				"implicit" : 1
 			}
  ],
