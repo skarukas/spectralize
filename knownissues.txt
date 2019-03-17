@@ -1,0 +1,14 @@
+- note-ons get stuck (issue with poly~). Has to do with message ordering, sometimes note-offs do not reach the adsr
+- tuning issues! and missed note-ons. Likely a result of notesIn message and the HARMONICS change. check createOffsets().
+- fix meanMode. Either keep lowest note of chord ET or make f0 ET
+- no visual feedback when all notes turn off--make the plot~ respond (hide all plots?)
+- patching is disorganized
+- octave offset feature/display is not very useful
+- fix the unneeded toStrings and fromsymbols
+- split up route map out of js
+- organize plot~ settings
+
+- combine with justin
+- display slide behavior in plot
+
+- discrepancy between octave numbers in plot and f0 display
