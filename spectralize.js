@@ -1,21 +1,20 @@
 /*
-Spectralize: Adaptive just intonation system for MIDI pitches. 
+Spectralize/JustIn: Adaptive just intonation system for MIDI pitches. 
 
-Version for JS object in Max/MSP (ES2015)
+Version for JS object in Max/MSP (ECMAScript 2015)
 
 Copyright Stephen Karukas, 2019
 */
 
-//================Variables================
+//================Variables/Structs================
 
-// An intensity is a ratio (0.-1.) that determines how much the intervals will be corrected.
+// a ratio (0.-1.) that determines how much the intervals will be corrected.
 var intensity = 1;
 
-
-var HARMONICS = [];
-
-// the guessed fundamental of the held pitches
-var fundamental = undefined;
+// mode controls the higher-level method of correction. It is one of:
+// - "spectralize"      corrects pitches based off the exact harmonic series
+// - "justify"          corrects pitches based off interval content, loosely based around harmonic series
+var mode = "spectralize";
 
 /*
 meanMode is a Boolean value.
@@ -25,19 +24,34 @@ meanMode is a Boolean value.
     -when false, the lowest pitch is always presented in its 12TET value
         example: playing a major 3rd will lower the high pitch by 14 cents 
 */
-var meanMode = true; 
+var meanMode = false; 
+
+// an Array of Note objects for each note currently active
+var heldNotes = [];
 
 /* 
 a Note is an object containing:
 -equalPitch : the MIDI pitch originally sent into the program
--offset : the number of semitones between the closest natural harmonic and equalPitch
+-offset : the number of semitones between the closest corrected pitch and the equalPitch
+-order : the Order of the interval that made the most recent 
+        change to the offset (justIn)
 -velocity : the MIDI velocity sent into the program 
 */
 function Note(_pitch, _velocity) {
     this.equalPitch = _pitch;
     this.offset = 0;
     this.velocity = _velocity;
+    this.order = -1;
 }
+
+
+// =========spectralize-specific==========
+
+// the guessed fundamental of the held pitches
+var fundamental;
+
+//Array of Partials representing the harmonic series of MIDI-pitch 0
+var HARMONICS = [];
 
 /**
  * an Object representing a partial of the harmonic series starting at MIDI pitch = 0
@@ -57,10 +71,90 @@ function Partial(n) {
     this.offset = harmonic - roundedHarmonic;
 }
 
-// an Array of Note objects for each note currently active
-var heldNotes = [];
+createPartials(300);
 
-setLimit(300);
+// =========justIn-specific==========
+
+// an Array of JustObj's containing the orders and offsets for each chromatic pitch 0-11
+var justSystem = [];
+
+/**
+ * JustObj is a struct for storing data about an interval within a JI system
+ * 
+ * @constructor
+ * 
+ * @param {Number} equalInterval  the number of semitones in the equal tempered MIDI interval
+ * @param {Number} offset         the offset in semitones from the justly-tuned MIDI interval
+ * @param {Number} order          the Order of the interval
+ */
+
+function JustObj(equalInterval, offset, order) {
+    this.equalInterval = equalInterval;
+    this.offset = offset;
+    this.order = order;
+}
+
+//====Limits====
+
+// hard-coded JI and order values for intervals
+var fiveLimit = [
+  new JustObj(0, 0, 11), 
+  new JustObj(1, 0.12, 1), 
+  new JustObj(2, 0.04, 6), 
+  new JustObj(3, 0.16, 10), 
+  new JustObj(4, -0.14, 2), 
+  new JustObj(5, -0.02, 9), 
+  new JustObj(6, -0.1, 3), 
+  new JustObj(7, 0.02, 8), 
+  new JustObj(8, 0.14, 4), 
+  new JustObj(9, -0.16, 5), 
+  new JustObj(10, -0.04, 7), 
+  new JustObj(11, -0.12, 0)];
+
+var sevenLimit = [
+  new JustObj(0, 0, 11), 
+  new JustObj(1, 0.12, 1), 
+  new JustObj(2, 0.04, 6), 
+  new JustObj(3, 0.16, 9), 
+  new JustObj(4, -0.14, 3), 
+  new JustObj(5, -0.02, 2), 
+  new JustObj(6, -0.1, 10), 
+  new JustObj(7, 0.02, 8), 
+  new JustObj(8, 0.14, 4), 
+  new JustObj(9, -0.16, 5), 
+  new JustObj(10, -0.31, 7), 
+  new JustObj(11, -0.12, 0)]; 
+  
+var elevenLimit = [
+  new JustObj(0, 0, 11), 
+  new JustObj(1, 0.12, 1), 
+  new JustObj(2, 0.04, 9), 
+  new JustObj(3, 0.16, 3), 
+  new JustObj(4, -0.14, 2), 
+  new JustObj(5, -0.02, 6), 
+  new JustObj(6, -0.49, 10), 
+  new JustObj(7, 0.02, 8), 
+  new JustObj(8, 0.14, 4), 
+  new JustObj(9, -0.16, 5), 
+  new JustObj(10, -0.31, 7), 
+  new JustObj(11, -0.12, 0)]; 
+
+var thirteenLimit = [
+  new JustObj(0, 0, 11), 
+  new JustObj(1, 0.12, 1), 
+  new JustObj(2, 0.04, 9), 
+  new JustObj(3, 0.16, 3), 
+  new JustObj(4, -0.14, 2), 
+  new JustObj(5, -0.02, 6), 
+  new JustObj(6, -0.49, 10), 
+  new JustObj(7, 0.02, 8), 
+  new JustObj(8, 0.40, 4), 
+  new JustObj(9, -0.16, 5), 
+  new JustObj(10, -0.31, 7), 
+  new JustObj(11, -0.12, 0)];
+
+setLimit(5); 
+
 // ===========I/O==========
 
 /*
@@ -73,17 +167,17 @@ This program outputs the following messages:
 "noteMessage", targetPitch (Number), bend (Number)
   - specifices what already held pitch to target, and the decimal value that should be added to justly tune it
 
-"justPitches", justPitches (String)
-  - a stringified list of all justPitches currently held
+"justPitches", justPitches (Array)
+  - a list of all justPitches currently held
 
-"equalPitches", equalPitches (String)
-  - a stringified list of all equalPitches currently held
+"equalPitches", equalPitches (Array)
+  - a list of all equalPitches currently held
 
-"offsetList", offsetList (String)
-  - a stringified list of offsets for each pitch currently held
+"offsetList", offsetList (Array)
+  - a list of offsets for each pitch currently held
 
-"offsetOctave", offsetOctave (String)
-  - a stringified list of current offsets for each chromatic pitch (0-11)
+"offsetOctave", offsetOctave (Array)
+  - a list of current offsets for each chromatic pitch (0-11)
 
 "done"
     -outputs when note processing has finished (for measuring latency).
@@ -103,6 +197,27 @@ function postError(err) {
 
 // ===========Inputs==========
 
+
+// sets the JI system to n-limit tuning (n = 5, 7, 11, or 13)
+function setLimit(n) {
+    switch (n) {
+      case 5:
+        justSystem = fiveLimit;
+        break;
+      case 7:
+        justSystem = sevenLimit;
+        break;
+      case 11:
+        justSystem = elevenLimit;
+        break;
+      case 13:
+        justSystem = thirteenLimit;
+        break;
+      default:
+        postError('Tuning not available.\nValid arguments: 5, 7, 11, 13');
+    }
+}
+
 // sets the meanMode value (Boolean)
 function setMeanMode(bool) {
     if (bool == false) {
@@ -114,24 +229,53 @@ function setMeanMode(bool) {
     }
 }
 
+// sets the mode value ("spectralize" or "justify")
+function setMode(s) {
+    if (s == "spectralize" || s == "justify" ) {
+        mode = s;
+    } else {
+        postError('Not valid.\nValid arguments: spectralize or justify');
+    }
+}
+
+// sets the intensity of pitch correction
+function setIntensity(val) {
+    intensity = val;
+    adjustPitches(heldNotes);
+    allNoteMsgOut();
+    justCompOut();
+} 
+
+// sends note-offs then empties the array
+function clearNotes() {
+    heldNotes.forEach(function (obj) {
+        noteCtrlOut(obj.equalPitch, 0);
+    });
+    heldNotes = [];
+}
+
+// main function--processes incoming MIDI notes, sending out noteControls (MIDI notes) 
+//      and noteMessages (pitch bend for each note).
 function notesIn() {
-    resetOffsets();
+    resetNotes();
 
     for (i = 0; i < arguments.length/2; i++) {
         var index = i * 2;
         noteHandler(arguments[index], arguments[index + 1]);
         noteCtrlOut(arguments[index], arguments[index + 1]);
     }
-
-    spectralize(heldNotes);
+    if (heldNotes.length > 1) {
+        adjustPitches(heldNotes);
+    }
     allNoteMsgOut();
     justCompOut();
     output('done');
 
-    // sets all offsets equal to 0
-    function resetOffsets() {
+    // resets all offsets and orders
+    function resetNotes() {
         for (i = 0; i < heldNotes.length; i++) {
             heldNotes[i].offset = 0;
+            heldNotes[i].order = -1;           
         }
     }
     // adds or removes a Note from heldNotes[]
@@ -161,49 +305,6 @@ function notesIn() {
             output("allnotesoff");
         }
     }
-}
-
-// main function--processes incoming MIDI notes, sending out noteControls (MIDI notes) 
-//      and noteMessages (pitch bend for each note).
-function noteIn(pitch, velocity) {
-
-    //noteCtrlOut(pitch, velocity);
-    resetOffsets();
-    
-    noteHandler(pitch, velocity);
-    spectralize(heldNotes);
-    allNoteMsgOut();
-    justCompOut();
-    output('done');
-
-
-    // sets all offsets equal to 0
-    function resetOffsets() {
-        for (i = 0; i < heldNotes.length; i++) {
-            heldNotes[i].offset = 0;
-        }
-    }
-}
-
-// sends note-offs then empties the array
-function clearNotes() {
-    heldNotes.forEach(function (obj) {
-        noteCtrlOut(obj.equalPitch, 0);
-    });
-    heldNotes = [];
-}
-
-// creates an Array of rounded harmonics n elements long
-function setLimit(n) {
-    var len = HARMONICS.length;
-    if (n > len) {
-        for (i = len + 1; i <= n; i++) {
-            HARMONICS.push(new Partial(i));
-        }
-    } else {
-        HARMONICS = HARMONICS.slice(0, n);
-    }
-    //spectralize(heldNotes);
 }
 
 // ===========Outputs==========
@@ -267,6 +368,9 @@ function allNoteMsgOut() {
     });
 }
 
+
+//========Global Functions========
+
 // returns the nth harmonic of a fundamental MIDI note f
 function MIDIHarmonic(f, n) {
     return f + 12 * (Math.log(n))/Math.log(2);
@@ -277,22 +381,24 @@ function MIDISubHarmonic(f, n) {
     return f - 12 * (Math.log(n))/Math.log(2);
 }
 
+// creates an Array of rounded harmonics n elements long
+function createPartials(n) {
+    var len = HARMONICS.length;
+    if (n > len) {
+        for (i = len + 1; i <= n; i++) {
+            HARMONICS.push(new Partial(i));
+        }
+    } else {
+        HARMONICS = HARMONICS.slice(0, n);
+    }
+}
+
 // puts noteArr in ascending order by equalPitch
 function sortPitchesAscending(noteArr) {
     return noteArr.sort(function (a, b) {
       return a.equalPitch - b.equalPitch;
     });
-}  
-
-
-// sets the intensity of pitch correction
-function setIntensity(val) {
-    intensity = val; //.clamp(0, 1); just for funzies now you can have extreme amounts of "correction"
-    spectralize(heldNotes);
-    allNoteMsgOut();
-    justCompOut();
-} 
-
+}
 
 Array.prototype.contains = function(val) {
     for (i in this) {
@@ -301,70 +407,18 @@ Array.prototype.contains = function(val) {
     return false;
 }
 
-/**
- * determines offset values for each Note in heldNotes 
- * 
- * @param {Array<Number>} noteArr    an Array of MIDI pitches
- */
-function spectralize(noteArr) {
-    var roundedHarmonics = HARMONICS.map(function(H) {return H.equalPitch;});
-    /**
-     * returns the "zero form" of the pitches of all notes held down
-     * 
-     * @param {Array<Note>} noteArr    an unsorted, unoffset list of Notes
-     * 
-     * @return {Array<Number>}         an Array of ascending MIDI pitches transposed so the first is equal to 0
-     */
-    var zeroForm = makeZeroForm(noteArr);
-    
-    function makeZeroForm(arr) {
-        return sortPitchesAscending(arr).map(function(N) { 
-            return N.equalPitch - arr[0].equalPitch});
-    }
 
-    if (zeroForm.length) {
-        noteArr[0].offset = 0;
-        var len = zeroForm.length;
-        var i = 0;
-        bigloop:
-        // searches for the zeroForm in the harmonic series from bottom to top (iterates up the harmonic series)
-        while (i<roundedHarmonics.length) {
-            var transposedForm = zeroForm.map(function(n) {return n + roundedHarmonics[i]}); // the zeroForm, transposed for comparison with higher harmonics
-            var j = 0;
-            // continues iterating through the transposedForm until there is a mismatch
-            while (j<=len) {
-                if (j === len) { // success; roundedHarmonics contains all notes of transposedForm
-                    var harmonicNums = transposedForm.map(function(n) {
-                        return roundedHarmonics.indexOf(n) + 1}); // what harmonics the transposedForm corresponds to
-                        createOffsets(harmonicNums);
-                    break bigloop;
-                } else if (roundedHarmonics.contains(transposedForm[j], i + 1)) {
-                    j++; // match, try again with the next element
-                } else {
-                    break;
-                }
-            }
-            i++;
-        }
-    }
-    if (meanMode) {
-        meanAdjust();
-    }
-}
+// parent function for pitch correction
+function adjustPitches(noteArr) {
+    if (mode === "spectralize") {
+        spectralize(noteArr);
+    } else {
+        justify(noteArr);
+	}
 
-/**
- * modifies the offset value of all Notes in heldNotes to fit exactly in the harmonic series
- * 
- * @param {Array<Number>} harmonicNums    the closest harmonics to each note held down
- */
-function createOffsets(harmonicNums) {
-    var lowestHarmonic = harmonicNums[0]; // lowest harmonic currently held
-    fundamental = MIDISubHarmonic(heldNotes[0].equalPitch, lowestHarmonic);
-    var firstOffset = HARMONICS[lowestHarmonic - 1].offset;
-    for (i = 0; i < harmonicNums.length; i++) {
-        heldNotes[i].offset = HARMONICS[harmonicNums[i] - 1].offset - firstOffset; // equalizes everything to the lowestHarmonic
-    }
-    outlet(0, "harmonicNums", harmonicNums);
+	if (meanMode) {
+		meanAdjust();
+  	}
 }
 
 // alters justPitches so that the mean of all justPitches equals the mean of all equalPitches.
@@ -393,4 +447,114 @@ function meanAdjust() {
         }
         fundamental += meanOffset;
     }
-} 
+}
+
+// =============spectralize Code==============
+
+// determines the location of an [ArrayOf Note] in the harmonic series and tunes each note to match
+function spectralize(noteArr) {
+    var roundedHarmonics = HARMONICS.map(function(H) {return H.equalPitch;});
+    /**
+     * returns the "zero form" of the pitches of all notes held down
+     * 
+     * @param {Array<Note>} noteArr    an unsorted, unoffset list of Notes
+     * 
+     * @return {Array<Number>}         an Array of ascending MIDI pitches transposed so the first is equal to 0
+     */
+    var zeroForm = makeZeroForm(noteArr);
+    
+    function makeZeroForm(arr) {
+        return sortPitchesAscending(arr).map(function(N) { 
+            return N.equalPitch - arr[0].equalPitch});
+    }
+
+    if (zeroForm.length) {
+        noteArr[0].offset = 0;
+        var len = zeroForm.length;
+        var i = 0;
+        bigloop:
+        // searches for the zeroForm in the harmonic series from bottom to top (iterates up the harmonic series)
+        while (i<roundedHarmonics.length) {
+            var transposedForm = zeroForm.map(function(n) {return n + roundedHarmonics[i]}); // the zeroForm, transposed for comparison with higher harmonics
+            var j = 0;
+            // continues iterating through the transposedForm until there is a mismatch
+            while (j<=len) {
+				if (j === len) { // success; roundedHarmonics contains all notes of transposedForm
+					
+                    var harmonicNums = transposedForm.map(function(n) {
+                        return roundedHarmonics.indexOf(n) + 1}); // what harmonics the transposedForm corresponds to
+
+					// modifies the offset value of all Notes in heldNotes to fit exactly in the harmonic series
+					function createOffsets() {
+						var lowestHarmonic = harmonicNums[0]; // lowest harmonic currently held
+						fundamental = MIDISubHarmonic(heldNotes[0].equalPitch, lowestHarmonic);
+						var firstOffset = HARMONICS[lowestHarmonic - 1].offset;
+						for (i = 0; i < harmonicNums.length; i++) {
+							heldNotes[i].offset = HARMONICS[harmonicNums[i] - 1].offset - firstOffset; // equalizes everything to the lowestHarmonic
+						}
+						outlet(0, "harmonicNums", harmonicNums);
+					}
+					
+					createOffsets();
+					
+					break bigloop;
+                } else if (roundedHarmonics.contains(transposedForm[j], i + 1)) {
+                    j++; // match, try again with the next element
+                } else {
+                    break;
+                }
+            }
+            i++;
+        }
+    }
+}
+
+
+// =============justify Code==============
+
+// compares all members of an [ArrayOf Note], adjusting a Note's justPitch 
+//      to create intervals of the highest order with other members.
+function justify(noteArr) {
+    fundamental = NaN;
+    var numNotes = noteArr.length;
+  
+    sortPitchesAscending(noteArr);
+    
+    // lower pitched Note for comparison
+    for (lo = 0; lo < numNotes - 1; lo++) {
+		var LoNote = noteArr[lo]; 
+		
+		// higher pitched Note for comparison, starting at the next highest Note from lo
+		for (hi = lo + 1; hi < numNotes; hi++) {
+			var HiNote = noteArr[hi];
+			var interval = HiNote.equalPitch - LoNote.equalPitch;
+			var IntervalObj = justSystem[interval % 12];
+			var intervalIsHigherOrder = IntervalObj.order > HiNote.order || IntervalObj.order > LoNote.order;
+	
+			// if the order of the interval is greater than an existing order, create the just interval between the two pitches
+			if (intervalIsHigherOrder) {
+		
+				// creates an interval between two Notes, offsetting the pitch of whichever has a lower order
+				function createInterval(Hi, Lo, offset) {
+                    post(Hi.order + "\n");
+					if (Hi.order > Lo.order) {
+						Lo.offset = offset;
+					} else {
+						Hi.offset = offset;
+					}
+				} 
+		
+				// updates an Note's order if it is higher than queryOrder
+				function updateOrder(N, order) {
+					if (order > N.order) {
+						N.order = order;
+					}
+                } 
+
+                createInterval(HiNote, LoNote, IntervalObj.offset);
+                updateOrder(HiNote, IntervalObj.order);
+				updateOrder(LoNote, IntervalObj.order);
+			}
+		}
+    }
+}

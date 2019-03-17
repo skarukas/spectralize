@@ -12,3 +12,5 @@
 - display slide behavior in plot
 
 - discrepancy between octave numbers in plot and f0 display
+
+-justify straight up doesn't work
