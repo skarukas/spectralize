@@ -98,60 +98,60 @@ function JustObj(equalInterval, offset, order) {
 
 // hard-coded JI and order values for intervals
 var fiveLimit = [
-  new JustObj(0, 0, 11), 
-  new JustObj(1, 0.12, 1), 
-  new JustObj(2, 0.04, 6), 
-  new JustObj(3, 0.16, 10), 
-  new JustObj(4, -0.14, 2), 
-  new JustObj(5, -0.02, 9), 
-  new JustObj(6, -0.1, 3), 
-  new JustObj(7, 0.02, 8), 
-  new JustObj(8, 0.14, 4), 
-  new JustObj(9, -0.16, 5), 
-  new JustObj(10, -0.04, 7), 
-  new JustObj(11, -0.12, 0)];
+    new JustObj(0, 0, 11), 
+    new JustObj(1, 0.12, 1), 
+    new JustObj(2, 0.04, 4), 
+    new JustObj(3, 0.16, 6), 
+    new JustObj(4, -0.14, 8), 
+    new JustObj(5, -0.02, 9), 
+    new JustObj(6, -0.1, 2), 
+    new JustObj(7, 0.02, 10), 
+    new JustObj(8, 0.14, 7), 
+    new JustObj(9, -0.16, 5), 
+    new JustObj(10, -0.04, 3), 
+    new JustObj(11, -0.12, 0)];
 
 var sevenLimit = [
-  new JustObj(0, 0, 11), 
-  new JustObj(1, 0.12, 1), 
-  new JustObj(2, 0.04, 6), 
-  new JustObj(3, 0.16, 9), 
-  new JustObj(4, -0.14, 3), 
-  new JustObj(5, -0.02, 2), 
-  new JustObj(6, -0.1, 10), 
-  new JustObj(7, 0.02, 8), 
-  new JustObj(8, 0.14, 4), 
-  new JustObj(9, -0.16, 5), 
-  new JustObj(10, -0.31, 7), 
-  new JustObj(11, -0.12, 0)]; 
+    new JustObj(0, 0, 11), 
+    new JustObj(1, 0.12, 1), 
+    new JustObj(2, 0.04, 5), 
+    new JustObj(3, 0.16, 4), 
+    new JustObj(4, -0.14, 8), 
+    new JustObj(5, -0.02, 9), 
+    new JustObj(6, -0.1, 2), 
+    new JustObj(7, 0.02, 10), 
+    new JustObj(8, 0.14, 7), 
+    new JustObj(9, -0.16, 3), 
+    new JustObj(10, -0.31, 6), 
+    new JustObj(11, -0.12, 0)]; 
   
 var elevenLimit = [
-  new JustObj(0, 0, 11), 
-  new JustObj(1, 0.12, 1), 
-  new JustObj(2, 0.04, 9), 
-  new JustObj(3, 0.16, 3), 
-  new JustObj(4, -0.14, 2), 
-  new JustObj(5, -0.02, 6), 
-  new JustObj(6, -0.49, 10), 
-  new JustObj(7, 0.02, 8), 
-  new JustObj(8, 0.14, 4), 
-  new JustObj(9, -0.16, 5), 
-  new JustObj(10, -0.31, 7), 
-  new JustObj(11, -0.12, 0)]; 
+    new JustObj(0, 0, 1), 
+    new JustObj(1, 0.12, 1), 
+    new JustObj(2, 0.04, 4), 
+    new JustObj(3, 0.16, 3), 
+    new JustObj(4, -0.14, 8), 
+    new JustObj(5, -0.02, 9), 
+    new JustObj(6, -0.49, 5), 
+    new JustObj(7, 0.02, 10), 
+    new JustObj(8, 0.14, 7), 
+    new JustObj(9, -0.16, 2), 
+    new JustObj(10, -0.31, 6), 
+    new JustObj(11, -0.12, 0)]; 
 
 var thirteenLimit = [
-  new JustObj(0, 0, 11), 
-  new JustObj(1, 0.12, 1), 
-  new JustObj(2, 0.04, 9), 
-  new JustObj(3, 0.16, 3), 
-  new JustObj(4, -0.14, 2), 
-  new JustObj(5, -0.02, 6), 
-  new JustObj(6, -0.49, 10), 
-  new JustObj(7, 0.02, 8), 
-  new JustObj(8, 0.40, 4), 
-  new JustObj(9, -0.16, 5), 
-  new JustObj(10, -0.31, 7), 
-  new JustObj(11, -0.12, 0)];
+    new JustObj(0, 0, 1), 
+    new JustObj(1, 0.12, 1), 
+    new JustObj(2, 0.04, 4), 
+    new JustObj(3, 0.16, 3), 
+    new JustObj(4, -0.14, 8), 
+    new JustObj(5, -0.02, 9), 
+    new JustObj(6, -0.49, 5), 
+    new JustObj(7, 0.02, 10), 
+    new JustObj(8, 0.40, 7), 
+    new JustObj(9, -0.16, 2), 
+    new JustObj(10, -0.31, 6), 
+    new JustObj(11, -0.12, 0)]; 
 
 setLimit(5); 
 
@@ -536,7 +536,6 @@ function justify(noteArr) {
 		
 				// creates an interval between two Notes, offsetting the pitch of whichever has a lower order
 				function createInterval(Hi, Lo, offset) {
-                    post(Hi.order + "\n");
 					if (Hi.order > Lo.order) {
 						Lo.offset = offset;
 					} else {
