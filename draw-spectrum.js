@@ -14,6 +14,7 @@ var HEIGHT = box.rect[3] - box.rect[1];
 var maxValue = 3000;
 var pitchArr, mouseX, mouseY;
 var mouseIn = false;
+var mouseHeld = false;
 
 function notes() {
     pitchArr = Array.prototype.slice.call(arguments);
@@ -58,6 +59,15 @@ function draw() {
             var mouses = screentoworld(mouseX, mouseY-5);
             moveto(mouses);
             text(Math.floor(screenToHz(mouseX)) + " Hz");
+        }
+    }
+
+    if (mouseHeld) {
+        with (sketch) {
+            glcolor(0, 1, 1, 0.5);
+            var mouses = screentoworld(mouseX, mouseY);
+            moveto(mouses);
+            circle(0.1);
         }
     }
     refresh();
@@ -153,8 +163,15 @@ function onidle(x, y) {
     draw();
 }
 
-function ondrag(x, y) {
+function ondrag(x, y, button) {
+    mouseHeld = button;
     onidle(x,y);
+    var freq = (button)? screenToHz(x) : 0;
+    outlet(0, "clickedFreq", freq);
+}
+
+function onclick(x, y, button) {
+    ondrag(x, y, button);
 }
 
 function onidleout() {
