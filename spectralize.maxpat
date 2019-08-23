@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 58.0, 79.0, 1188.0, 687.0 ],
+		"rect" : [ 58.0, 79.0, 855.0, 687.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 1,
 		"default_fontsize" : 12.0,
@@ -613,6 +613,7 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
+						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-58",
@@ -4111,12 +4112,12 @@
 							"number_style" : "none",
 							"filter" : "none",
 							"domain_start" : 0.0,
-							"domain_end" : 0.0,
+							"domain_end" : 4.0,
 							"domain_style" : "linear",
 							"domain_markers" : [  ],
 							"domain_labels" : [  ],
-							"range_start" : 68.0,
-							"range_end" : 70.0,
+							"range_start" : 59.0,
+							"range_end" : 73.0,
 							"range_style" : "linear",
 							"range_markers" : [  ],
 							"range_labels" : [  ],
@@ -4135,8 +4136,8 @@
 							"domain_style" : "linear",
 							"domain_markers" : [  ],
 							"domain_labels" : [  ],
-							"range_start" : 68.0,
-							"range_end" : 70.0,
+							"range_start" : 59.0,
+							"range_end" : 73.0,
 							"range_style" : "linear",
 							"range_markers" : [  ],
 							"range_labels" : [  ],
@@ -4374,7 +4375,7 @@
 					"patching_rect" : [ 99.2734375, 648.83331298828125, 448.0, 56.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ -2.74993896484375, 261.16668701171875, 132.0, 56.0 ],
-					"text" : "A4",
+					"text" : "F0",
 					"textcolor" : [ 0.164705887436867, 0.513725519180298, 0.643137276172638, 1.0 ],
 					"textjustification" : 2
 				}
@@ -4417,7 +4418,7 @@
 					"patching_rect" : [ 206.2734375, 582.83331298828125, 182.0, 22.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 20.25006103515625, 243.16668701171875, 168.0, 22.0 ],
-					"text" : "440.00 Hz",
+					"text" : "21.80 Hz",
 					"textcolor" : [ 0.69803923368454, 0.69803923368454, 0.69803923368454, 1.0 ],
 					"textjustification" : 1
 				}
@@ -4433,8 +4434,8 @@
 					"patching_rect" : [ 152.7734375, 619.83331298828125, 227.0, 27.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 136.0, 275.66668701171875, 77.0, 27.0 ],
-					"text" : "+0 ¢",
-					"textcolor" : [ 0.375, 0.375, 0.375, 1.0 ]
+					"text" : "-1 ¢",
+					"textcolor" : [ 0.3675, 0.3825, 0.3825, 1.0 ]
 				}
 
 			}
@@ -4818,12 +4819,13 @@
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-3",
+									"linecount" : 4,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 151.0, 133.0, 50.0, 22.0 ],
-									"text" : "69 0"
+									"text" : "66 0 60 0 68 0 72 0 64 0"
 								}
 
 							}
@@ -6457,12 +6459,12 @@
 					"presentation_rect" : [ 279.5, 102.666671752929688, 94.0, 48.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_longname" : "live.dial[5]",
 							"parameter_mmax" : 1.0,
 							"parameter_steps" : 1,
 							"parameter_shortname" : "Correction Intensity",
 							"parameter_type" : 0,
-							"parameter_unitstyle" : 1,
-							"parameter_longname" : "live.dial[5]"
+							"parameter_unitstyle" : 1
 						}
 
 					}
@@ -7056,12 +7058,12 @@
 					"presentation_rect" : [ 276.5, 171.666656494140625, 100.0, 48.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_exponent" : 2.0,
+							"parameter_longname" : "live.dial[4]",
 							"parameter_mmax" : 5000.0,
 							"parameter_shortname" : "Microtonal \"Slide\" (ms)",
 							"parameter_type" : 0,
-							"parameter_unitstyle" : 0,
-							"parameter_exponent" : 2.0,
-							"parameter_longname" : "live.dial[4]"
+							"parameter_unitstyle" : 0
 						}
 
 					}
@@ -7132,13 +7134,13 @@
 					"presentation_rect" : [ 196.0, 111.666671752929688, 58.0, 48.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_mmin" : 1.0,
+							"parameter_exponent" : 2.0,
+							"parameter_longname" : "live.dial[3]",
 							"parameter_mmax" : 3000.0,
 							"parameter_shortname" : "Release (ms)",
 							"parameter_type" : 0,
-							"parameter_unitstyle" : 0,
-							"parameter_mmin" : 1.0,
-							"parameter_exponent" : 2.0,
-							"parameter_longname" : "live.dial[3]"
+							"parameter_unitstyle" : 0
 						}
 
 					}
@@ -7160,11 +7162,11 @@
 					"presentation_rect" : [ 136.0, 111.666671752929688, 58.0, 48.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_longname" : "live.dial[2]",
 							"parameter_mmax" : 1.0,
 							"parameter_shortname" : "Sustain",
 							"parameter_type" : 0,
-							"parameter_unitstyle" : 1,
-							"parameter_longname" : "live.dial[2]"
+							"parameter_unitstyle" : 1
 						}
 
 					}
@@ -7186,13 +7188,13 @@
 					"presentation_rect" : [ 76.0, 111.666671752929688, 58.0, 48.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_mmin" : 1.0,
+							"parameter_exponent" : 2.0,
+							"parameter_longname" : "live.dial[1]",
 							"parameter_mmax" : 1000.0,
 							"parameter_shortname" : "Decay (ms)",
 							"parameter_type" : 0,
-							"parameter_unitstyle" : 0,
-							"parameter_mmin" : 1.0,
-							"parameter_exponent" : 2.0,
-							"parameter_longname" : "live.dial[1]"
+							"parameter_unitstyle" : 0
 						}
 
 					}
@@ -7214,13 +7216,13 @@
 					"presentation_rect" : [ 14.0, 111.666671752929688, 58.0, 48.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_mmin" : 1.0,
+							"parameter_exponent" : 2.0,
+							"parameter_longname" : "live.dial",
 							"parameter_mmax" : 1000.0,
 							"parameter_shortname" : "Attack (ms)",
 							"parameter_type" : 0,
-							"parameter_unitstyle" : 0,
-							"parameter_mmin" : 1.0,
-							"parameter_exponent" : 2.0,
-							"parameter_longname" : "live.dial"
+							"parameter_unitstyle" : 0
 						}
 
 					}
@@ -7291,7 +7293,7 @@
 					"patching_rect" : [ 34.606689453125, 730.00006103515625, 517.66656494140625, 245.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 186.291259765625, 376.16668701171875, 687.0, 245.0 ],
-					"text" : "A4",
+					"text" : "F0",
 					"textcolor" : [ 0.0, 0.0, 0.0, 0.050000000745058 ],
 					"textjustification" : 2
 				}
@@ -7817,12 +7819,12 @@
 			}
  ],
 		"parameters" : 		{
+			"obj-19" : [ "live.dial", "Attack (ms)", 0 ],
 			"obj-26" : [ "live.dial[3]", "Release (ms)", 0 ],
 			"obj-23" : [ "live.dial[2]", "Sustain", 0 ],
 			"obj-21" : [ "live.dial[1]", "Decay (ms)", 0 ],
-			"obj-8" : [ "live.dial[4]", "Microtonal \"Slide\" (ms)", 0 ],
-			"obj-19" : [ "live.dial", "Attack (ms)", 0 ],
 			"obj-15" : [ "live.dial[5]", "Correction Intensity", 0 ],
+			"obj-8" : [ "live.dial[4]", "Microtonal \"Slide\" (ms)", 0 ],
 			"parameterbanks" : 			{
 
 			}

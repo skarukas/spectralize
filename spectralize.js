@@ -1,7 +1,7 @@
 /*
 Spectralize/JustIn: Adaptive just intonation system for MIDI pitches. 
 
-Version for JS object in Max/MSP (ECMAScript 2015)
+Version for JS object in Max/MSP (ES5)
 
 Copyright Stephen Karukas, 2019
 */
@@ -42,6 +42,7 @@ function Note(_pitch, _velocity) {
     this.offset = 0;
     this.velocity = _velocity;
     this.order = -1;
+    this.partialNum = -1;
 }
 
 
@@ -451,61 +452,47 @@ function meanAdjust() {
 
 // =============spectralize Code==============
 
-// determines the location of an [ArrayOf Note] in the harmonic series and tunes each note to match
-function spectralize(noteArr) {
-    var roundedHarmonics = HARMONICS.map(function(H) {return H.equalPitch;});
-    /**
-     * returns the "zero form" of the pitches of all notes held down
-     * 
-     * @param {Array<Note>} noteArr    an unsorted, unoffset list of Notes
-     * 
-     * @return {Array<Number>}         an Array of ascending MIDI pitches transposed so the first is equal to 0
-     */
-    var zeroForm = makeZeroForm(noteArr);
-    
-    function makeZeroForm(arr) {
-        return sortPitchesAscending(arr).map(function(N) { 
-            return N.equalPitch - arr[0].equalPitch});
-    }
+// determines the location of an Note[] in the harmonic series and tunes each note to match
+function spectralize(arr) {
 
-    if (zeroForm.length) {
-        noteArr[0].offset = 0;
-        var len = zeroForm.length;
-        var i = 0;
-        bigloop:
-        // searches for the zeroForm in the harmonic series from bottom to top (iterates up the harmonic series)
-        while (i<roundedHarmonics.length) {
-            var transposedForm = zeroForm.map(function(n) {return n + roundedHarmonics[i]}); // the zeroForm, transposed for comparison with higher harmonics
-            var j = 0;
-            // continues iterating through the transposedForm until there is a mismatch
-            while (j<=len) {
-				if (j === len) { // success; roundedHarmonics contains all notes of transposedForm
-					
-                    var harmonicNums = transposedForm.map(function(n) {
-                        return roundedHarmonics.indexOf(n) + 1}); // what harmonics the transposedForm corresponds to
+    sortPitchesAscending(arr);
 
-					// modifies the offset value of all Notes in heldNotes to fit exactly in the harmonic series
-					function createOffsets() {
-						var lowestHarmonic = harmonicNums[0]; // lowest harmonic currently held
-						fundamental = MIDISubHarmonic(heldNotes[0].equalPitch, lowestHarmonic);
-						var firstOffset = HARMONICS[lowestHarmonic - 1].offset;
-						for (i = 0; i < harmonicNums.length; i++) {
-							heldNotes[i].offset = HARMONICS[harmonicNums[i] - 1].offset - firstOffset; // equalizes everything to the lowestHarmonic
-						}
-						outlet(0, "harmonicNums", harmonicNums);
-					}
-					
-					createOffsets();
-					
-					break bigloop;
-                } else if (roundedHarmonics.contains(transposedForm[j], i + 1)) {
-                    j++; // match, try again with the next element
-                } else {
-                    break;
-                }
-            }
+    var i = 1;
+    var j = 1;
+    arr[0].partialNum = i;
+
+    while (j < arr.length) {
+
+        var testPartial = i * Math.pow(2, (arr[j].equalPitch - arr[0].equalPitch)/12); // the actual value of arr[j]'s ET "partial"
+        var roundedPartial = Math.round(testPartial);
+        var midiError = 12 * Math.abs(log2(testPartial/roundedPartial)); // the number of MIDI semitones between testPartial and roundedPartial
+
+        // makes sure the rounding associated with assuming the interval doesn't take us to a different MIDI pitch
+        if (midiError < 0.5) { 
+            arr[j].partialNum = roundedPartial;
+            j++;
+        } else {
+            j = 1;
             i++;
+            arr[0].partialNum = i;
         }
+    }
+    createOffsets();
+    
+    function log2(n) {
+        return Math.log(n) / Math.log(2);
+    }
+    
+    // bases the operation off the first element of heldNotes (gets an offset of 0). notes should be sorted or else 
+    //      the result will not be consistent with different orderings of the same set
+    function createOffsets() {
+        fundamental = MIDISubHarmonic(arr[0].equalPitch, arr[0].partialNum);
+        var harmonicNums = [arr[0].partialNum];
+        for (var i = 1; i < arr.length; i++) {
+            arr[i].offset = MIDIHarmonic(fundamental, arr[i].partialNum) - arr[i].equalPitch;
+            harmonicNums[i] = arr[i].partialNum;
+        }
+        outlet(0, "harmonicNums", harmonicNums);
     }
 }
 
