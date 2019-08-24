@@ -1,3 +1,5 @@
+//@ts-check
+
 /*
 Spectralize/JustIn: Adaptive just intonation system for MIDI pitches. 
 
@@ -260,7 +262,7 @@ function clearNotes() {
 function notesIn() {
     resetNotes();
 
-    for (i = 0; i < arguments.length/2; i++) {
+    for (var i = 0; i < arguments.length/2; i++) {
         var index = i * 2;
         noteHandler(arguments[index], arguments[index + 1]);
         noteCtrlOut(arguments[index], arguments[index + 1]);
@@ -274,7 +276,7 @@ function notesIn() {
 
     // resets all offsets and orders
     function resetNotes() {
-        for (i = 0; i < heldNotes.length; i++) {
+        for (var i = 0; i < heldNotes.length; i++) {
             heldNotes[i].offset = 0;
             heldNotes[i].order = -1;           
         }
@@ -336,7 +338,7 @@ function justCompOut() {
     // sends out a list of the offset of every pitch in an octave
     function offsetOctaveOut() {
         var offsetArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        for (i = 0; i < heldNotes.length; i++) {
+        for (var i = 0; i < heldNotes.length; i++) {
         var N = heldNotes[i];
         offsetArr[N.equalPitch % 12] = N.offset * intensity;
         }
@@ -346,7 +348,7 @@ function justCompOut() {
     // sends out a list of the offset of every pitch in the heldNotes Array
     function offsetListOut() {
         var offsetArr = [];
-        for (i = 0; i < heldNotes.length; i++) {
+        for (var i = 0; i < heldNotes.length; i++) {
         var N = heldNotes[i];
         offsetArr.push(N.offset * intensity * 100);
         }
@@ -386,7 +388,7 @@ function MIDISubHarmonic(f, n) {
 function createPartials(n) {
     var len = HARMONICS.length;
     if (n > len) {
-        for (i = len + 1; i <= n; i++) {
+        for (var i = len + 1; i <= n; i++) {
             HARMONICS.push(new Partial(i));
         }
     } else {
@@ -402,7 +404,7 @@ function sortPitchesAscending(noteArr) {
 }
 
 Array.prototype.contains = function(val) {
-    for (i in this) {
+    for (var i in this) {
         if (this[i] === val) return true;
     }
     return false;
@@ -430,7 +432,7 @@ function meanAdjust() {
     var justTotal = 0;
     var numNotes = heldNotes.length;
 
-    for (i = 0; i < numNotes; i++) {
+    for (var i = 0; i < numNotes; i++) {
         var N = heldNotes[i];
         equalTotal += N.equalPitch;
         justTotal += N.equalPitch + N.offset;
@@ -443,7 +445,7 @@ function meanAdjust() {
     // transposes all offsets by the meanOffset value
     function offsetAllPitches(meanOffset) {
         var numNotes = heldNotes.length;
-        for (i = 0; i < numNotes; i++) {
+        for (var i = 0; i < numNotes; i++) {
             heldNotes[i].offset += meanOffset;
         }
         fundamental += meanOffset;
@@ -508,11 +510,11 @@ function justify(noteArr) {
     sortPitchesAscending(noteArr);
     
     // lower pitched Note for comparison
-    for (lo = 0; lo < numNotes - 1; lo++) {
+    for (var lo = 0; lo < numNotes - 1; lo++) {
 		var LoNote = noteArr[lo]; 
 		
 		// higher pitched Note for comparison, starting at the next highest Note from lo
-		for (hi = lo + 1; hi < numNotes; hi++) {
+		for (var hi = lo + 1; hi < numNotes; hi++) {
 			var HiNote = noteArr[hi];
 			var interval = HiNote.equalPitch - LoNote.equalPitch;
 			var IntervalObj = justSystem[interval % 12];
