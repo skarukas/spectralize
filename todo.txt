@@ -1,0 +1,17 @@
+FIXES:
+
+- port harmonics and partial stuff into masterSpectrum or get rid of it
+- fix setFundamental, and get a way to retrieve the fundamental
+- for stretched spectra, make it so "partials of partials" are calculated correctly 
+    - octave = (12 * stretch)
+- maybe just remove stretch for MasterSpectrum
+- process notes before running any analysis
+- store analysis in Results (rename) then output all at the same time
+- fix "Adjust to lowest pitch" or meanmode options
+- make sure when stretch and shift are applied masterSpectrum is regenerated to 
+    guarantee a chromatic octave
+- fix setIntensity (calls everything whenever changed, but sometime there are no notes)
+
+ADD:
+
+- create makeKeyboardSpectrum to display every partial of the current spectrum
